@@ -1,14 +1,14 @@
 import os
 import sys
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from typing import Any, Callable, Dict, List, Optional
+from zoneinfo import ZoneInfo
 
 import requests
 from loguru import logger
 from pydantic import BaseModel, Field
 
-from ext_bark import send_bark_notification
+from ext_notification import send_notification
 
 
 class Response(BaseModel):
@@ -86,11 +86,11 @@ class KurobbsClient:
         return self.make_request(self.USER_SIGN_URL, {"gameId": 2})
 
     def _process_sign_action(
-        self,
-        action_name: str,
-        action_method: Callable[[], Response],
-        success_message: str,
-        failure_message: str,
+            self,
+            action_name: str,
+            action_method: Callable[[], Response],
+            success_message: str,
+            failure_message: str,
     ):
         """
         Handle the common logic for sign-in actions.
@@ -153,10 +153,10 @@ def main():
         kurobbs = KurobbsClient(token)
         kurobbs.start()
         if kurobbs.msg:
-            send_bark_notification(kurobbs.msg)
+            send_notification(kurobbs.msg)
     except KurobbsClientException as e:
         logger.error(str(e), exc_info=False)
-        send_bark_notification("签到任务失败!")
+        send_notification("签到任务失败!")
         sys.exit(1)
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
