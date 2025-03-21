@@ -8,6 +8,7 @@ on:
 
 jobs:
   auto-sign:
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest  # 使用最新的 Ubuntu 环境
 
     steps:
