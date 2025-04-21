@@ -145,22 +145,22 @@ def configure_logger(debug: bool = False):
 
 
 def main():
-    """Main function to handle command-line arguments and start the sign-in process."""
-    token = os.getenv("TOKEN")
-    debug = os.getenv("DEBUG", False)
-    configure_logger(debug=debug)
-
     try:
         kurobbs = KurobbsClient(token)
         kurobbs.start()
         if kurobbs.msg:
-            send_notification(kurobbs.msg)
+            send_notification(f"库街区签到成功：{kurobbs.msg}")
+    except requests.RequestException as e:
+        logger.error(f"网络请求失败：{str(e)}")
+        send_notification("库街区签到失败：网络连接异常")
+        sys.exit(1)
     except KurobbsClientException as e:
-        logger.error(str(e), exc_info=False)
-        send_notification(str(e))
+        logger.error(f"签到流程错误：{str(e)}")
+        send_notification(f"库街区签到失败：{str(e)}")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+        logger.exception("未预期的错误：")  # 记录完整堆栈跟踪
+        send_notification(f"库街区签到失败：系统异常（{type(e).__name__}）")
         sys.exit(1)
 
 
