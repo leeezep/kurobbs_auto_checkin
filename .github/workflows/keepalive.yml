@@ -1,30 +1,30 @@
 name: Keep Repo Alive
 
-on:
-  schedule:
-    # 每 30 天跑一次（GitHub 60 天限制，30 天很安全）
-    - cron: '0 0 */30 * *'
-  workflow_dispatch:
+# on:
+#   schedule:
+#     # 每 30 天跑一次（GitHub 60 天限制，30 天很安全）
+#     - cron: '0 0 */30 * *'
+#   workflow_dispatch:
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
-  keepalive:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+# jobs:
+#   keepalive:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
 
-      - name: Set git config
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+#       - name: Set git config
+#         run: |
+#           git config user.name "github-actions[bot]"
+#           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create empty commit
-        run: |
-          git commit --allow-empty -m "chore: keep repo alive"
+#       - name: Create empty commit
+#         run: |
+#           git commit --allow-empty -m "chore: keep repo alive"
 
-      - name: Push changes
-        run: |
-          git push 
+#       - name: Push changes
+#         run: |
+#           git push 
