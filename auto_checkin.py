@@ -80,8 +80,13 @@ class KurobbsClient:
         beijing_tz = ZoneInfo('Asia/Shanghai')
         beijing_time = datetime.now(beijing_tz)
 
-        role_info = user_game_list.get("defaultRoleList", [])[0]
+        # role_info = user_game_list.get("defaultRoleList", [])[0]
+        role_list = user_game_list.get("defaultRoleList", [])
+        if not role_list:
+            raise KurobbsClientException("未找到游戏角色")
 
+        role_info = role_list[0]
+        
         data = {
             "gameId": role_info.get("gameId", 2),
             "serverId": role_info.get("serverId", None),
@@ -156,22 +161,29 @@ def configure_logger(debug: bool = False):
 
 def main():
     """Main function to handle command-line arguments and start the sign-in process."""
-    token = os.getenv("TOKEN")
+    # token = os.getenv("TOKEN")
+    tokens = os.getenv("TOKEN").split("#")
     debug = os.getenv("DEBUG", False)
 
-    try:
-        kurobbs = KurobbsClient(token)
-        kurobbs.start()
-        if kurobbs.msg:
-            send_notification(kurobbs.msg)
-    except KurobbsClientException as e:
-        logger.error(str(e), exc_info=False)
-        send_notification(str(e))
-        sys.exit(1)
-    except Exception as e:
-        logger.exception(f"An unexpected error occurred: {e}")
-        sys.exit(1)
+    all_msg = []
+    
+    for index, token in enumerate(tokens, start=1):
+        try:
+            kurobbs = KurobbsClient(token)
+            kurobbs.start()
+            if kurobbs.msg:
+                all_msg.append(f"账号{index}：{kurobbs.msg}")
+        except KurobbsClientException as e:
+            logger.error(f"账号{index}签到失败: {str(e)}", exc_info=False)
+            all_msg.append(f"账号{index}签到失败: {str(e)}")
+            sys.exit(1)
+        except Exception as e:
+            logger.exception(f"An unexpected error occurred: {e}")
+            sys.exit(1)
 
+    # 汇总通知
+    if all_msg:
+        send_notification("\n".join(all_msg))
 
 if __name__ == "__main__":
     main()
