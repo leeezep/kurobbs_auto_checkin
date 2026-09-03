@@ -95,6 +95,8 @@ class KurobbsClient:
     def checkin(self) -> Response:
         """Perform the check-in operation."""
         mine_info = self.get_mine_info()
+        if not mine_info or not isinstance(mine_info, dict):
+            raise RuntimeError("获取用户信息失败：mine_info 为空")
         user_game_list = self.get_user_game_list(user_id=mine_info.get("mine", {}).get("userId", 0))
 
         beijing_tz = ZoneInfo("Asia/Shanghai")
